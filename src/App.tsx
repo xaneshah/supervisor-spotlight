@@ -1,23 +1,52 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Toaster as Sonner } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
+import { lazy, Suspense } from "react";
+import { AppLayout } from "@/components/layout/AppLayout";
+import { CardSkeleton } from "@/components/ui/SkeletonLoader";
+
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Explore = lazy(() => import("./pages/Explore"));
+const TeacherProfilePage = lazy(() => import("./pages/TeacherProfilePage"));
+const LiveFeed = lazy(() => import("./pages/LiveFeed"));
+const Bookmarks = lazy(() => import("./pages/Bookmarks"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
+
+function PageLoader() {
+  return (
+    <div className="space-y-4 p-6">
+      <CardSkeleton />
+      <CardSkeleton />
+    </div>
+  );
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
+      <Sonner
+        position="bottom-right"
+        toastOptions={{
+          style: {
+            background: 'hsl(240 6% 7%)',
+            border: '1px solid hsl(240 4% 16%)',
+            color: 'hsl(0 0% 95%)',
+          },
+        }}
+      />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
+          <Route element={<AppLayout />}>
+            <Route path="/" element={<Suspense fallback={<PageLoader />}><Dashboard /></Suspense>} />
+            <Route path="/explore" element={<Suspense fallback={<PageLoader />}><Explore /></Suspense>} />
+            <Route path="/teacher/:id" element={<Suspense fallback={<PageLoader />}><TeacherProfilePage /></Suspense>} />
+            <Route path="/feed" element={<Suspense fallback={<PageLoader />}><LiveFeed /></Suspense>} />
+            <Route path="/bookmarks" element={<Suspense fallback={<PageLoader />}><Bookmarks /></Suspense>} />
+          </Route>
+          <Route path="*" element={<Suspense fallback={<PageLoader />}><NotFound /></Suspense>} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
