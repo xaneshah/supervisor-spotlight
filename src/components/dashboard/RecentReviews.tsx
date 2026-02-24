@@ -4,7 +4,7 @@ import { GlassCard } from '@/components/ui/GlassCard';
 import { StarDisplay } from '@/components/reviews/StarDisplay';
 import { formatDistanceToNow } from '@/utils/formatDate';
 
-import { getAllReviews } from '@/services/reviewService';
+import { subscribeToReviews } from '@/services/reviewService';
 import { getTeacherById } from '@/services/teacherService';
 import { Link } from 'react-router-dom';
 import type { Review } from '@/types';
@@ -15,7 +15,8 @@ export function RecentReviews() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getAllReviews().then(async (reviews) => {
+    setLoading(true);
+    const unsubscribe = subscribeToReviews(async (reviews) => {
       const limitedReviews = reviews.slice(0, 5);
 
       // Fetch teacher details for each review
@@ -38,7 +39,9 @@ export function RecentReviews() {
 
       setRecent(reviewsWithNames);
       setLoading(false);
-    });
+    }, 5);
+
+    return () => unsubscribe();
   }, []);
 
   return (

@@ -7,7 +7,7 @@ import { getAllTeachers } from '@/services/teacherService';
 import { useMemo, useState, useEffect } from 'react';
 import type { Teacher } from '@/types';
 
-const departments: (Department | 'all')[] = ['all', 'ai', 'cs', 'ee'];
+const departments: (Department | 'all')[] = ['all', 'ai', 'cs', 'ee', 'se', 'cysec', 'it', 'ds', 'me', 'ce', 'cen', 'ie'];
 
 export function FilterBar() {
   const { department, setDepartment, sort, setSort, viewMode, setViewMode } = useFilterStore();
@@ -19,7 +19,15 @@ export function FilterBar() {
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: teachers.length };
-    teachers.forEach(t => { c[t.department] = (c[t.department] || 0) + 1; });
+    // Initialize all departments with 0
+    departments.forEach(d => { if (d !== 'all') c[d] = 0; });
+
+    teachers.forEach(t => {
+      if (t.department) {
+        const deptKey = t.department.toLowerCase();
+        c[deptKey] = (c[deptKey] || 0) + 1;
+      }
+    });
     return c;
   }, [teachers]);
 
@@ -37,7 +45,7 @@ export function FilterBar() {
                 : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
             )}
           >
-            {d === 'all' ? 'All' : DEPARTMENT_SHORT[d]}
+            {d === 'all' ? 'All' : (DEPARTMENT_SHORT[d as Department] || String(d).toUpperCase() || 'Other')}
             <span className={cn(
               'rounded-full px-1.5 py-0.5 text-[10px]',
               department === d ? 'bg-primary-foreground/20' : 'bg-background'

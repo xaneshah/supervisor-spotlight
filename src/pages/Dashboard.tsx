@@ -17,12 +17,20 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
-        {/* Row 1: Stats (3 cols), Dept Tiles (1 col) */}
-        <div className="lg:col-span-3">
+        {/* Row 1: Stats (Full width) */}
+        <div className="lg:col-span-4">
           <StatsCard />
         </div>
-        <div className="lg:col-span-1">
-          <DepartmentTiles />
+
+        {/* Row 2: Department Tiles (Full width) */}
+        <div className="lg:col-span-4">
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-1 bg-primary rounded-full" />
+              <h2 className="font-display font-bold text-xl text-foreground">Academic Departments</h2>
+            </div>
+            <DepartmentTiles />
+          </div>
         </div>
 
         {/* Row 2: Recent Reviews (2 cols), Mentor Matcher (2 cols) */}

@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 6% 10%;
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 240 6% 10%;
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 240 6% 10%;
-    --primary: 239 84% 67%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 240 5% 96%;
-    --secondary-foreground: 240 6% 10%;
-    --muted: 240 5% 96%;
-    --muted-foreground: 240 4% 46%;
-    --accent: 189 94% 43%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 240 6% 90%;
-    --input: 240 6% 90%;
-    --ring: 239 84% 67%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 243 75% 59%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 199 89% 48%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 243 75% 59%;
     --radius: 0.75rem;
 
     --glass-bg: 0 0% 100% / 0.7;
@@ -32,11 +32,19 @@
     --dept-ai: 263 70% 58%;
     --dept-cs: 189 94% 43%;
     --dept-ee: 38 92% 50%;
+    --dept-se: 210 100% 50%;
+    --dept-cysec: 0 100% 50%;
+    --dept-it: 280 100% 50%;
+    --dept-ds: 150 100% 40%;
+    --dept-me: 20 100% 50%;
+    --dept-ce: 45 100% 50%;
+    --dept-cen: 180 100% 40%;
+    --dept-ie: 10 100% 40%;
 
-    --gradient-primary: linear-gradient(135deg, hsl(239 84% 67%), hsl(189 94% 43%));
-    --gradient-primary-subtle: linear-gradient(135deg, hsl(239 84% 67% / 0.15), hsl(189 94% 43% / 0.15));
-    --shadow-glow: 0 0 40px hsl(239 84% 67% / 0.15);
-    --shadow-card: 0 4px 24px hsl(239 84% 67% / 0.08);
+    --gradient-primary: linear-gradient(135deg, hsl(243 75% 59%), hsl(199 89% 48%));
+    --gradient-primary-subtle: linear-gradient(135deg, hsl(243 75% 59% / 0.15), hsl(199 89% 48% / 0.15));
+    --shadow-glow: 0 0 40px hsl(243 75% 59% / 0.25);
+    --shadow-card: 0 8px 32px hsl(222 47% 11% / 0.08);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5% 26%;
@@ -90,11 +98,18 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', sans-serif;
   }
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     font-family: 'Plus Jakarta Sans', sans-serif;
     letter-spacing: -0.025em;
   }
@@ -102,18 +117,23 @@
 
 @layer utilities {
   .glass {
-    background: hsl(var(--glass-bg));
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    border: 1px solid hsl(var(--glass-border));
+    @apply bg-white/70 dark:bg-zinc-900/60 transition-colors duration-300;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid theme('colors.slate.200' / 0.5);
+  }
+
+  .dark .glass {
+    border: 1px solid theme('colors.white' / 0.1);
   }
 
   .glass-hover {
     @apply glass transition-all duration-300;
   }
+
   .glass-hover:hover {
     border-color: hsl(var(--primary) / 0.3);
-    box-shadow: var(--shadow-glow);
+    box-shadow: 0 0 30px hsl(var(--primary) / 0.1);
   }
 
   .gradient-text {
@@ -128,6 +148,7 @@
     background: hsl(var(--glass-bg));
     backdrop-filter: blur(var(--glass-blur));
   }
+
   .gradient-border::before {
     content: '';
     position: absolute;
@@ -163,24 +184,54 @@
 
   .mesh-gradient {
     background-color: hsl(var(--background));
-    background-image: 
-      radial-gradient(at 0% 0%, hsl(var(--primary) / 0.15) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, hsl(var(--accent) / 0.15) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, hsl(var(--dept-ai) / 0.15) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, hsl(var(--dept-ee) / 0.15) 0px, transparent 50%);
+    background-image:
+      radial-gradient(at 0% 0%, hsl(243 75% 59% / 0.08) 0px, transparent 60%),
+      radial-gradient(at 100% 0%, hsl(199 89% 48% / 0.08) 0px, transparent 60%),
+      radial-gradient(at 100% 100%, hsl(263 70% 50% / 0.08) 0px, transparent 60%),
+      radial-gradient(at 0% 100%, hsl(243 75% 59% / 0.05) 0px, transparent 60%);
+  }
+
+  .mesh-gradient::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, hsl(263 70% 50% / 0.03), transparent 70%);
+    pointer-events: none;
   }
 
   .bg-grid-white {
     background-size: 40px 40px;
-    background-image: 
-      linear-gradient(to right, hsl(var(--foreground) / 0.05) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--foreground) / 0.05) 1px, transparent 1px);
+    background-image:
+      linear-gradient(to right, hsl(var(--foreground) / 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--foreground) / 0.03) 1px, transparent 1px);
+  }
+
+  /* Custom Scrollbar */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #4c1d95 #111827;
+  }
+
+  /* Chrome, Edge, and Safari */
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #111827;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #4c1d95;
+    border-radius: 20px;
+    border: 1px solid #111827;
   }
 
   .bromastic-card {
     @apply glass transition-all duration-500 overflow-hidden relative;
   }
-  
+
   .bromastic-card::after {
     content: '';
     position: absolute;
@@ -195,41 +246,180 @@
   }
 
   .shimmer {
-    background: linear-gradient(
-      90deg,
-      hsl(var(--muted)) 0%,
-      hsl(var(--muted-foreground) / 0.08) 50%,
-      hsl(var(--muted)) 100%
-    );
+    background: linear-gradient(90deg,
+        hsl(var(--muted)) 0%,
+        hsl(var(--muted-foreground) / 0.08) 50%,
+        hsl(var(--muted)) 100%);
     background-size: 200% 100%;
     animation: shimmer 1.5s ease-in-out infinite;
   }
 
   @keyframes shimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
+    0% {
+      background-position: 200% 0;
+    }
+
+    100% {
+      background-position: -200% 0;
+    }
   }
 
-  .dept-ai { color: hsl(var(--dept-ai)); }
-  .dept-cs { color: hsl(var(--dept-cs)); }
-  .dept-ee { color: hsl(var(--dept-ee)); }
-  .dept-ai-bg { background: hsl(var(--dept-ai) / 0.15); color: hsl(var(--dept-ai)); }
-  .dept-cs-bg { background: hsl(var(--dept-cs) / 0.15); color: hsl(var(--dept-cs)); }
-  .dept-ee-bg { background: hsl(var(--dept-ee) / 0.15); color: hsl(var(--dept-ee)); }
-  .dept-ai-border { border-color: hsl(var(--dept-ai)); }
-  .dept-cs-border { border-color: hsl(var(--dept-cs)); }
-  .dept-ee-border { border-color: hsl(var(--dept-ee)); }
+  .dept-ai {
+    color: hsl(var(--dept-ai));
+  }
+
+  .dept-cs {
+    color: hsl(var(--dept-cs));
+  }
+
+  .dept-ee {
+    color: hsl(var(--dept-ee));
+  }
+
+  .dept-se {
+    color: hsl(var(--dept-se));
+  }
+
+  .dept-cysec {
+    color: hsl(var(--dept-cysec));
+  }
+
+  .dept-it {
+    color: hsl(var(--dept-it));
+  }
+
+  .dept-ds {
+    color: hsl(var(--dept-ds));
+  }
+
+  .dept-me {
+    color: hsl(var(--dept-me));
+  }
+
+  .dept-ce {
+    color: hsl(var(--dept-ce));
+  }
+
+  .dept-cen {
+    color: hsl(var(--dept-cen));
+  }
+
+  .dept-ie {
+    color: hsl(var(--dept-ie));
+  }
+
+  .dept-ai-bg {
+    background: hsl(var(--dept-ai) / 0.15);
+    color: hsl(var(--dept-ai));
+  }
+
+  .dept-cs-bg {
+    background: hsl(var(--dept-cs) / 0.15);
+    color: hsl(var(--dept-cs));
+  }
+
+  .dept-ee-bg {
+    background: hsl(var(--dept-ee) / 0.15);
+    color: hsl(var(--dept-ee));
+  }
+
+  .dept-se-bg {
+    background: hsl(var(--dept-se) / 0.15);
+    color: hsl(var(--dept-se));
+  }
+
+  .dept-cysec-bg {
+    background: hsl(var(--dept-cysec) / 0.15);
+    color: hsl(var(--dept-cysec));
+  }
+
+  .dept-it-bg {
+    background: hsl(var(--dept-it) / 0.15);
+    color: hsl(var(--dept-it));
+  }
+
+  .dept-ds-bg {
+    background: hsl(var(--dept-ds) / 0.15);
+    color: hsl(var(--dept-ds));
+  }
+
+  .dept-me-bg {
+    background: hsl(var(--dept-me) / 0.15);
+    color: hsl(var(--dept-me));
+  }
+
+  .dept-ce-bg {
+    background: hsl(var(--dept-ce) / 0.15);
+    color: hsl(var(--dept-ce));
+  }
+
+  .dept-cen-bg {
+    background: hsl(var(--dept-cen) / 0.15);
+    color: hsl(var(--dept-cen));
+  }
+
+  .dept-ie-bg {
+    background: hsl(var(--dept-ie) / 0.15);
+    color: hsl(var(--dept-ie));
+  }
+
+  .dept-ai-border {
+    border-color: hsl(var(--dept-ai));
+  }
+
+  .dept-cs-border {
+    border-color: hsl(var(--dept-cs));
+  }
+
+  .dept-ee-border {
+    border-color: hsl(var(--dept-ee));
+  }
+
+  .dept-se-border {
+    border-color: hsl(var(--dept-se));
+  }
+
+  .dept-cysec-border {
+    border-color: hsl(var(--dept-cysec));
+  }
+
+  .dept-it-border {
+    border-color: hsl(var(--dept-it));
+  }
+
+  .dept-ds-border {
+    border-color: hsl(var(--dept-ds));
+  }
+
+  .dept-me-border {
+    border-color: hsl(var(--dept-me));
+  }
+
+  .dept-ce-border {
+    border-color: hsl(var(--dept-ce));
+  }
+
+  .dept-cen-border {
+    border-color: hsl(var(--dept-cen));
+  }
+
+  .dept-ie-border {
+    border-color: hsl(var(--dept-ie));
+  }
 
   .scrollbar-thin {
     scrollbar-width: thin;
     scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
   }
+
   .scrollbar-thin::-webkit-scrollbar {
     width: 4px;
   }
+
   .scrollbar-thin::-webkit-scrollbar-track {
     background: transparent;
   }
+
   .scrollbar-thin::-webkit-scrollbar-thumb {
     background: hsl(var(--muted-foreground) / 0.3);
     border-radius: 4px;

@@ -18,13 +18,7 @@ import {
 export async function getAllTeachers(): Promise<Teacher[]> {
   try {
     const querySnapshot = await getDocs(collection(db, "teachers"));
-    if (querySnapshot.empty) {
-      console.log("Firebase connected but 'teachers' collection is empty.");
-      return [];
-    }
-    const teachers = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Teacher));
-    console.log("Firebase connected successfully, fetched teachers:", teachers);
-    return teachers;
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Teacher));
   } catch (error) {
     console.error("Error connecting to Firebase:", error);
     return [];
@@ -41,7 +35,6 @@ export async function getTeacherById(id: string): Promise<Teacher | undefined> {
     if (docSnap.exists()) {
       return { id: docSnap.id, ...docSnap.data() } as Teacher;
     } else {
-      console.log("No such teacher!");
       return undefined;
     }
   } catch (error) {
@@ -70,9 +63,9 @@ export async function searchTeachers(queryText: string): Promise<Teacher[]> {
     const q = queryText.toLowerCase();
 
     return teachers.filter(t =>
-      t.name.toLowerCase().includes(q) ||
-      t.subject.toLowerCase().includes(q)
-    ).slice(0, 5);
+      (t.name || "").toLowerCase().includes(q) ||
+      (t.subject || "").toLowerCase().includes(q)
+    );
   } catch (error) {
     console.error("Error searching teachers:", error);
     return [];
@@ -97,19 +90,24 @@ export async function getTopRatedTeachers(): Promise<Teacher[]> {
 }
 
 export async function getDepartmentCounts(): Promise<Record<string, number>> {
-  const departments: Department[] = ['ai', 'cs', 'ee'];
+  const departments: Department[] = ['ai', 'cs', 'ee', 'se', 'cysec', 'it', 'ds', 'me', 'ce', 'cen', 'ie'];
   const counts: Record<string, number> = {};
+  departments.forEach(d => counts[d] = 0);
 
   try {
-    await Promise.all(departments.map(async (dept) => {
-      const q = query(collection(db, "teachers"), where("department", "==", dept));
-      const snapshot = await getCountFromServer(q);
-      counts[dept] = snapshot.data().count;
-    }));
+    const teachers = await getAllTeachers();
+    teachers.forEach(t => {
+      if (t.department) {
+        const deptKey = t.department.toLowerCase();
+        if (counts.hasOwnProperty(deptKey)) {
+          counts[deptKey]++;
+        }
+      }
+    });
     return counts;
   } catch (error) {
     console.error("Error fetching department counts:", error);
-    return { ai: 0, cs: 0, ee: 0 };
+    return counts;
   }
 }
 

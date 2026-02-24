@@ -1,5 +1,5 @@
 import { db } from '@/lib/firebase';
-import { collection, getDocs, query, where, addDoc, orderBy, limit, collectionGroup, getCountFromServer } from 'firebase/firestore';
+import { collection, getDocs, query, where, addDoc, orderBy, limit, collectionGroup, getCountFromServer, onSnapshot } from 'firebase/firestore';
 import type { Review } from '@/types';
 
 export async function getReviewsByTeacher(teacherId: string): Promise<Review[]> {
@@ -34,10 +34,41 @@ export async function getAllReviews(): Promise<Review[]> {
       ...doc.data(),
       timestamp: doc.data().timestamp.toDate()
     })) as Review[];
-  } catch (error) {
-    console.error("Error fetching all reviews:", error);
+  } catch (error: any) {
+    if (error.code === 'failed-precondition') {
+      console.error("Firestore Index Missing! Please create a composite index for collectionGroup 'reviews' ordered by 'timestamp' descending.");
+      console.error("Link to create index:", error.message);
+    } else {
+      console.error("Error fetching all reviews:", error);
+    }
     return [];
   }
+}
+
+export function subscribeToReviews(
+  callback: (reviews: Review[]) => void,
+  limitCount: number = 20
+) {
+  const q = query(collectionGroup(db, 'reviews'), orderBy("timestamp", "desc"), limit(limitCount));
+
+  const unsubscribe = onSnapshot(q, (snapshot) => {
+    const reviews = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      timestamp: doc.data().timestamp.toDate()
+    })) as Review[];
+
+    callback(reviews);
+  }, (error: any) => {
+    if (error.code === 'failed-precondition') {
+      console.error("Firestore Index Missing for onSnapshot! Please create a composite index for collectionGroup 'reviews' ordered by 'timestamp' descending.");
+      console.error("Link to create index:", error.message);
+    } else {
+      console.error("Error subscribing to reviews:", error);
+    }
+  });
+
+  return unsubscribe;
 }
 
 export async function addReview(review: Omit<Review, 'id' | 'timestamp'>): Promise<Review> {

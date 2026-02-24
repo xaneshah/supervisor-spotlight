@@ -83,11 +83,11 @@ export function MentorMatcher() {
                             >
                                 <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 flex items-center gap-4">
                                     <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-primary-foreground font-bold">
-                                        {result.name[0]}
+                                        {(result?.name || 'U')[0].toUpperCase()}
                                     </div>
                                     <div className="flex-1">
-                                        <h4 className="font-bold text-sm">{result.name}</h4>
-                                        <p className="text-xs text-muted-foreground">{result.subject}</p>
+                                        <h4 className="font-bold text-sm">{result?.name || 'Unknown Teacher'}</h4>
+                                        <p className="text-xs text-muted-foreground">{result?.subject || 'General'}</p>
                                     </div>
                                     <CheckCircle2 className="text-primary" size={20} />
                                 </div>

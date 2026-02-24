@@ -12,7 +12,7 @@ export const GlassCard = forwardRef<HTMLDivElement, GlassCardProps>(
     <motion.div
       ref={ref}
       className={cn(
-        'rounded-lg glass',
+        'rounded-2xl glass',
         hover && 'glass-hover',
         glow && 'shadow-[var(--shadow-glow)]',
         className

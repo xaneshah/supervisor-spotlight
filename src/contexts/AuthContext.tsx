@@ -5,7 +5,8 @@ import {
     signInWithEmailAndPassword,
     signOut,
     onAuthStateChanged,
-    updateProfile
+    updateProfile,
+    sendPasswordResetEmail
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase'; // We need to export 'auth' from firebase.ts first
 
@@ -15,6 +16,7 @@ interface AuthContextType {
     signup: (email: string, password: string, name: string) => Promise<void>;
     login: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
+    resetPassword: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -28,8 +30,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [loading, setLoading] = useState(true);
 
     function signup(email: string, password: string, name: string) {
-        if (!email.endsWith('@uni.edu.pk')) {
-            return Promise.reject(new Error('Only @uni.edu.pk emails are allowed.'));
+        if (!email.endsWith('@nutech.edu.pk')) {
+            return Promise.reject(new Error('Please use your official university email (@nutech.edu.pk).'));
         }
         return createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
             return updateProfile(userCredential.user, { displayName: name });
@@ -37,11 +39,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     function login(email: string, password: string) {
+        if (!email.endsWith('@nutech.edu.pk')) {
+            return Promise.reject(new Error('Please use your official university email (@nutech.edu.pk).'));
+        }
         return signInWithEmailAndPassword(auth, email, password).then(() => { });
     }
 
     function logout() {
         return signOut(auth);
+    }
+
+    function resetPassword(email: string) {
+        return sendPasswordResetEmail(auth, email);
     }
 
     useEffect(() => {
@@ -58,7 +67,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loading,
         signup,
         login,
-        logout
+        logout,
+        resetPassword
     };
 
     return (

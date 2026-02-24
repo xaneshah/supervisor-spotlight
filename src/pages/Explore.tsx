@@ -32,21 +32,28 @@ export default function Explore() {
   }, []);
 
   const filtered = useMemo(() => {
-    let list = department === 'all' ? teachers : teachers.filter(t => t.department === department);
+    let list = department === 'all'
+      ? teachers
+      : teachers.filter(t => t.department?.toLowerCase() === department.toLowerCase());
 
-    if (debouncedQuery.trim()) {
-      const q = debouncedQuery.toLowerCase();
-      list = list.filter(t =>
-        t.name.toLowerCase().includes(q) ||
-        t.subject.toLowerCase().includes(q)
-      );
+    const q = (debouncedQuery || "").trim().toLowerCase();
+    if (q) {
+      list = list.filter(t => {
+        const tName = (t.name || "").toLowerCase();
+        const tSubj = (t.subject || "").toLowerCase();
+        return tName.includes(q) || tSubj.includes(q);
+      });
     }
 
     switch (sort) {
-      case 'highest': return [...list].sort((a, b) => b.rating - a.rating);
+      case 'highest': return [...list].sort((a, b) => (b.rating || 0) - (a.rating || 0));
       case 'most-reviewed': return [...list].sort((a, b) => (reviewCounts[b.id] || 0) - (reviewCounts[a.id] || 0));
-      case 'name-az': return [...list].sort((a, b) => a.name.localeCompare(b.name));
-      case 'available': return [...list].sort((a, b) => (b.isAvailable ? 1 : 0) - (a.isAvailable ? 1 : 0));
+      case 'name-az': return [...list].sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+      case 'available': return [...list].sort((a, b) => {
+        const aAvail = a.isAvailable ?? a.availableForFyp ?? true ? 1 : 0;
+        const bAvail = b.isAvailable ?? b.availableForFyp ?? true ? 1 : 0;
+        return bAvail - aAvail;
+      });
       default: return list;
     }
   }, [teachers, department, sort, debouncedQuery, reviewCounts]);

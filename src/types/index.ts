@@ -1,4 +1,4 @@
-export type Department = 'ai' | 'cs' | 'ee';
+export type Department = 'ai' | 'cs' | 'ee' | 'se' | 'cysec' | 'it' | 'ds' | 'me' | 'ce' | 'cen' | 'ie';
 
 export interface Teacher {
   id: string;
@@ -7,7 +7,8 @@ export interface Teacher {
   role: string;
   subject: string;
   rating: number;
-  isAvailable: boolean;
+  isAvailable?: boolean;
+  availableForFyp?: boolean;
 }
 
 export interface Review {

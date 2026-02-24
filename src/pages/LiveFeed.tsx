@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { getAllReviews } from '@/services/reviewService';
+import { subscribeToReviews } from '@/services/reviewService';
 import { getAllTeachers } from '@/services/teacherService';
 import { StarDisplay } from '@/components/reviews/StarDisplay';
 import { formatDistanceToNow } from '@/utils/formatDate';
@@ -22,11 +22,21 @@ export default function LiveFeed() {
   const [deptFilter, setDeptFilter] = useState<Department | 'all'>('all');
 
   useEffect(() => {
-    Promise.all([getAllReviews(), getAllTeachers()]).then(([r, t]) => {
-      setReviews(r);
+    let unsubscribe: (() => void) | undefined;
+
+    getAllTeachers().then(t => {
       setTeachers(t);
-      setLoading(false);
+
+      // Setup real-time listener for reviews
+      unsubscribe = subscribeToReviews((r) => {
+        setReviews(r);
+        setLoading(false);
+      }, 50); // Fetch up to 50 recent reviews for the feed
     });
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
   }, []);
 
   const getTeacher = (id: string) => teachers.find(t => t.id === id);
